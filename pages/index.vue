@@ -6,7 +6,7 @@
           Привет! Это тестовая настройка Nuxt 3
         </p>
         <p class="font-18-600 subtitle">
-          Stack: Nuxt 3, Typescript, Eslint, Composition Api, Pinia
+          Stack: Nuxt 3, Typescript, Eslint, Composition Api, Pinia, Vuetify
         </p>
       </div>
     
