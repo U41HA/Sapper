@@ -1,0 +1,13 @@
+
+@mixin fontGilroy($size, $weight:500, $height:140%) {
+    font-family: 'Gilroy', sans-serif;
+    font-size: $size;
+    font-weight: $weight;
+    line-height: $height;
+};
+@mixin fontComfortaa($size, $weight:700, $height:100%) {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: $size;
+    font-weight: $weight;
+    line-height: $height;
+};
