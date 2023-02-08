@@ -1,0 +1,26 @@
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+
+.keen-slider:not([data-keen-slider-disabled]) .keen-slider__slide {
+    overflow: visible;
+    width: auto;
+}
+
+.keen-slider:not([data-keen-slider-disabled]) {
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+:root {
+    --color-primary: #14AD99;
+    --color-second: #242424;
+    --pattern-url: `url('/themes/diamonds.svg');
+    --opacity: 0.07;
+}
+
+.text {
+    border-radius: 10px;
+}
