@@ -5,6 +5,10 @@ export default defineNuxtConfig({
       title: 'Hello, is an Nuxt 3 template'
     }
   },
+  css: ['vuetify/lib/styles/main.sass'],
+  build: {
+    transpile: ['vuetify'],
+  },
   modules: ['@pinia/nuxt'],
   vite: {
     css: {
@@ -13,6 +17,9 @@ export default defineNuxtConfig({
           additionalData: '@import "~/assets/css/style.scss";'
         }
       }
-    }
+    },
+    define: {
+      'process.env.DEBUG': false,
+    },
   }
 })

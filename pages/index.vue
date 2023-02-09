@@ -1,41 +1,21 @@
 <template>
-  <div>
-    <div class="main-wrapper">
-      <div class="title">
-        <p class="font-24-800 text">
-          Привет! Это тестовая настройка Nuxt 3
-        </p>
-        <p class="font-18-600 subtitle">
-          Stack: Nuxt 3, Typescript, Eslint, Composition Api, Pinia, Vuetify
-        </p>
-      </div>
-    
-      <the-test />
-    </div>
+  <div class="wrapper wrapper-main mx-auto">
+    <the-nav :data="store.levelList" v-model:currentLevel="currentLevel"></the-nav>
+      <common-the-cell></common-the-cell>
+      {{ currentLevel }}
   </div>
 </template>
 
 <script setup lang="ts">
+import { mainStore } from '~/store/index'
+const store = mainStore()
 
+const currentLevel = ref(store.levelList[0])
 </script>
 
 <style lang="scss" scoped>
-.main-wrapper {
-  box-sizing: border-box;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-}
-.text,
-.subtitle {
-  text-align: center;
-}
-
-.subtitle {
-  margin-top: 10px;
+.wrapper-main {
+  max-width: $md;
+  margin-top: 100px;
 }
 </style>
