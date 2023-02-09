@@ -1,9 +1,7 @@
 <template>
   <header class="header font-32-800">IQ-SAPPER</header>
   <main class="main">
-    <body>
-      <slot />
-    </body>
+    <slot />
   </main>
 </template>
 
@@ -18,6 +16,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  @extend %shadow; 
+  @extend %shadow;
 }
 </style>

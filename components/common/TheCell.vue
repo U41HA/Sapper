@@ -1,18 +1,47 @@
 <template>
-    <div class="wrapper">
-        <v-btn class="test__button"></v-btn>
+    <div class="wrapper font-9-500" @click="">
+        <span>
+            {{ props.rowIndex }}, {{ props.columnIndex }}
+        </span>
+        <v-btn v-if="isVisible" :class="{'disabled' :isDisabled}" class="test__button" @click="toggleButton" @click.right.prevent="disableButton"></v-btn>
     </div>
 </template>
 
 <script setup lang="ts">
+interface Props {
+    rowIndex: number,
+    columnIndex: number
+}
 
+const props = defineProps<Props>()
+
+const isVisible = ref(true)
+const isDisabled = ref(false)
+function toggleButton() {
+    if (!isDisabled.value) {
+        isVisible.value = !isVisible.value
+    }
+}
+function disableButton() {
+    isDisabled.value = !isDisabled.value
+}
 </script>
 
 <style lang="scss" scoped>
 .wrapper {
-    width: 10px;
-    height: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    z-index: 1;
+    user-select: none;
+}
+
+span {
+    position: relative;
+    z-index: 1;
 }
 
 .test__button {
@@ -25,5 +54,13 @@
     bottom: 0;
     min-width: 0px;
     border-radius: 0px;
+    background-color: $color-white-200;
+    z-index: 10;
+
+    &.disabled {
+        // pointer-events: none;
+        background: url('/icon/flag.svg') center center no-repeat, $color-gray-100;
+        background-size: 50%;
+    }
 }
 </style>

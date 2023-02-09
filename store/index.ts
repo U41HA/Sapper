@@ -21,7 +21,7 @@ export const mainStore = defineStore('test-store', () => {
     {
       id: 3,
       name: 'Сложный',
-      line: 16,
+      line: 32,
       column: 16,
       bombCount: 170
     }

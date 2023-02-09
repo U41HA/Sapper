@@ -1,5 +1,6 @@
 <template>
-    <nav class="navigation">
+    <nav class="navigation d-flex flex-column align-center">
+        <h2 class="font-20-800 navigation__title mb-3">Выберите сложность</h2>
         <ul class="navigation__list font-24-600 d-flex align-center justify-center">
             <li class="navigation__item" v-for="level in data" :key="level.id" @click="changeLevel(level)">
                 <v-btn class="pa-4 d-flex" :active="level.id === currentLevel.id">{{ level.name }}</v-btn>
@@ -28,8 +29,5 @@ function changeLevel(level: Level) {
 <style lang="scss" scoped>
 .navigation__list {
     gap: 20px;
-}
-
-.navigation__item.active {
 }
 </style>
