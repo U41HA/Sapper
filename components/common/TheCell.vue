@@ -1,9 +1,11 @@
 <template>
     <div class="wrapper font-9-500" @click="">
-        <span>
+        <!-- <span>
             {{ props.rowIndex }}, {{ props.columnIndex }}
-        </span>
-        <v-btn v-if="isVisible" :class="{'disabled' :isDisabled}" class="test__button" @click="toggleButton" @click.right.prevent="disableButton"></v-btn>
+        </span> -->
+        <slot />
+        <v-btn v-if="isVisible" :class="{ 'disabled': isDisabled }" class="test__button" @click="toggleButton"
+            @click.right.prevent="disableButton"></v-btn>
     </div>
 </template>
 
@@ -25,6 +27,7 @@ function toggleButton() {
 function disableButton() {
     isDisabled.value = !isDisabled.value
 }
+
 </script>
 
 <style lang="scss" scoped>
