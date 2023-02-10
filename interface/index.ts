@@ -3,5 +3,12 @@ export interface Level {
     name: string,
     line: number,
     column: number,
-    bombCount: number
-} 
+    bombCount: number,
+    firstClick: boolean,
+    matrix: any[][]
+}
+
+export interface ICell {
+    isBomb: boolean,
+    bombAround: number
+}

@@ -1,5 +1,5 @@
 <template>
-  <header class="header font-32-800">IQ-SAPPER 1231</header>
+  <header class="header font-32-800">IQ-SAPPER</header>
   <main class="main">
     <slot />
   </main>

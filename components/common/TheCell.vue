@@ -1,21 +1,32 @@
 <template>
-    <div class="wrapper font-9-500" @click="">
-        <!-- <span>
-            {{ props.rowIndex }}, {{ props.columnIndex }}
-        </span> -->
-        <slot />
+    <div class="wrapper font-9-500" @mouseover="changeCoords(props.rowIndex, props.columnIndex)">
+        <span v-if="props.data?.isBomb">
+            {{ props.data?.isBomb }}
+        </span>
+        <span v-else-if="props.data?.bombAround !== 0">
+            {{ props.data?.bombAround }}
+        </span>
         <v-btn v-if="isVisible" :class="{ 'disabled': isDisabled }" class="test__button" @click="toggleButton"
             @click.right.prevent="disableButton"></v-btn>
     </div>
 </template>
 
 <script setup lang="ts">
+import { ICell } from '~~/interface';
 interface Props {
     rowIndex: number,
-    columnIndex: number
+    columnIndex: number,
+    data: ICell | undefined,
+    clickTarget: number[]
+}
+const props = defineProps<Props>()
+
+const emit = defineEmits(['update:clickTarget'])
+
+function changeCoords(x: number, y: number) {
+    emit('update:clickTarget', [x, y])
 }
 
-const props = defineProps<Props>()
 
 const isVisible = ref(true)
 const isDisabled = ref(false)
@@ -26,6 +37,10 @@ function toggleButton() {
 }
 function disableButton() {
     isDisabled.value = !isDisabled.value
+}
+
+function logIt() {
+    console.log(props.rowIndex, props.columnIndex)
 }
 
 </script>
