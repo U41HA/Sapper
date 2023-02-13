@@ -10,5 +10,7 @@ export interface Level {
 
 export interface ICell {
     isBomb: boolean,
-    bombAround: number
+    bombAround: number,
+    isVisible: boolean,
+    isDisabled: boolean
 }

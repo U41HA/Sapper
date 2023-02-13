@@ -40,18 +40,13 @@ export const mainStore = defineStore('test-store', () => {
   ]
 
   // action
-  //   function generateMatrix (levelList: Level[]) {
-  //     levelList.forEach(element => element.matrix());
-  //   }
 
   function setMatrix(level: Level, clickTarget: number[]): any[][] | void {
-    console.log((clickTarget))
     if (level.firstClick) {
-      const bombCoords = createBombCoord(level.column, level.line, level.bombCount)
+      const bombCoords = createBombCoord(level.column, level.line, level.bombCount, clickTarget)
       setBombs(bombCoords, level.matrix)
       setBombValue(level.matrix)
       level.firstClick = false
-      console.log(level.firstClick)
       return level.matrix
     } else return
   }
@@ -63,11 +58,20 @@ export const mainStore = defineStore('test-store', () => {
   }
 
   levelList.forEach(item => item.matrix = setEmptyMatrix(item))
-  // levelList.forEach(item => item.matrix = setMatrix(item))
+
+  function toggleButton(matrix: any[][], coords: number[]) {
+    matrix[coords[0]][coords[1]].isVisible = false
+  }
+
+  function disableButton(matrix: any[][], coords: number[]) {
+    console.log(matrix[coords[0]][coords[1]])
+    matrix[coords[0]][coords[1]].isDisabled = !matrix[coords[0]][coords[1]].isDisabled
+  }
 
   return {
     levelList,
     setMatrix,
-    // generateMatrix
+    toggleButton,
+    disableButton
   }
 })

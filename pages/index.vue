@@ -2,7 +2,6 @@
   <div class="wrapper wrapper-main mx-auto">
     <the-nav :data="store.levelList" v-model:currentLevel="currentLevel"></the-nav>
     <the-field v-show="level.name === currentLevel.name" v-for="level in store.levelList" :level="level" ></the-field>
-    {{ currentLevel }}
   </div>
 </template>
 
