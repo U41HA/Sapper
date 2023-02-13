@@ -1,11 +1,16 @@
 <template>
-    <div class="wrapper font-12-800" @click="changeCoords(props.rowIndex, props.columnIndex)"  @click.right.prevent="changeCoords(props.rowIndex, props.columnIndex)" :class="[{bomb: props.data?.isBomb}, `bomb-${props.data?.bombAround}`]">
-        <span v-if="props.data?.isBomb">
-        </span>
-        <span v-else-if="props.data?.bombAround !== 0">
+    <div 
+        class="wrapper font-12-800" 
+        @click="changeCoords(props.rowIndex, props.columnIndex)"
+        @click.right.prevent="changeCoords(props.rowIndex, props.columnIndex)"
+        :class="[{bomb: props.data?.isBomb}, `bomb-${props.data?.bombAround}`]">
+        <span v-if="props.data?.bombAround !== 0">
             {{ props.data?.bombAround }}
         </span>
-        <v-btn v-if="props.data?.isVisible" :class="{ 'disabled': props.data?.isDisabled }" class="test__button"></v-btn>
+        <transition name="fade">
+            <v-btn v-if="props.data?.isVisible" :class="{ 'disabled': props.data?.isDisabled }"
+                class="test__button"></v-btn>
+        </transition>
     </div>
 </template>
 
@@ -25,19 +30,11 @@ function changeCoords(x: number, y: number) {
     emit('update:clickTarget', [x, y])
 }
 
-// function disableButton() {
-//     isDisabled.value = !isDisabled.value
-// }
-
-function logIt() {
-    console.log(props.rowIndex, props.columnIndex)
-}
-
 </script>
 
 <style lang="scss" scoped>
 .wrapper {
-    border: 1px solid $color-gray-100;
+    box-shadow: inset 0px 0px 2px $color-gray-100;
     width: 100%;
     height: 100%;
     display: flex;
@@ -46,34 +43,41 @@ function logIt() {
     position: relative;
     z-index: 1;
     user-select: none;
-    box-shadow: inset ;
+    box-shadow: inset;
 
     &.bomb {
         background: url('/icon/bomb.svg') center center no-repeat;
-        background-size: 40%;
+        background-size: 50%;
     }
 
     &.bomb-1 {
         color: $color-blue-100;
     }
+
     &.bomb-2 {
         color: $color-green-300;
     }
+
     &.bomb-3 {
         color: $color-red-200;
     }
+
     &.bomb-4 {
         color: $color-blue-200;
     }
+
     &.bomb-5 {
         color: $color-brown-200;
     }
+
     &.bomb-6 {
         color: $color-aquamarine-100;
     }
+
     &.bomb-7 {
         color: $color-black-200;
     }
+
     &.bomb-8 {
         color: $color-white-200;
         text-shadow: 1px 1px 4px $color-black-200;
@@ -99,7 +103,7 @@ span {
     z-index: 10;
 
     &.disabled {
-        // pointer-events: none;
+        pointer-events: none;
         background: url('/icon/flag.svg') center center no-repeat, $color-gray-100;
         background-size: 50%;
     }
