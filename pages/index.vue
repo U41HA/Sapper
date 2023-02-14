@@ -50,7 +50,7 @@ watch(inputValue, () => {
 <style lang="scss" scoped>
 .wrapper-main {
   max-width: fit-content;
-  padding: 50px 0px;
+  padding: 50px 10px;
 }
 
 .input {

@@ -1,23 +1,20 @@
 <template>
     <div class="record__wrapper">
         <p class="font-20-600 username">{{ props.data.userName }}</p>
-        <p class="font-16-600 level">Сложность: {{ props.data.level }}</p>
-        <p class="font-20-600 time">{{
-            new Date(props.data.time).toLocaleTimeString([], {
-                minute: '2-digit',
-                second: '2-digit',
-            })
-        }}</p>
+        <p class="font-16-600 level">Уровень: {{ props.data.level }}</p>
+        <p class="font-20-600 time">{{time}}</p>
     </div>
 </template>
 
 <script setup lang="ts">
 import { IRecord } from '~~/interface'
+import { convertStampToTime } from '~~/helpers/convertStampToTime';
 interface Props {
     data: IRecord
 }
 
 const props = defineProps<Props>()
+const time = convertStampToTime(props.data.time)
 </script>
 
 <style lang="scss" scoped>
@@ -38,6 +35,7 @@ const props = defineProps<Props>()
     max-width: 100%;
     overflow-x: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .time {

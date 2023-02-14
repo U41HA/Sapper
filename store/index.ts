@@ -3,6 +3,7 @@ import { IRecord, Level } from '~~/interface'
 import { generateMatrix } from '~~/helpers/generateMatrix'
 import { setMatrix } from '~~/helpers/setMatrix'
 import { ClientOnly } from '~~/.nuxt/components'
+import { setRecordList } from '~~/helpers/setRecordList'
 
 export const mainStore = defineStore('test-store', () => {
   // state
@@ -15,7 +16,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 8,
       bombCount: 7,
       firstClick: true,
-      flagsCount: 7,
+      flagsCount: 0,
       matrix: [[{}]]
     },
     {
@@ -25,7 +26,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 16,
       bombCount: 30,
       firstClick: true,
-      flagsCount: 30,
+      flagsCount: 0,
       matrix: [[{}]]
     },
     {
@@ -35,7 +36,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 16,
       bombCount: 1,
       firstClick: true,
-      flagsCount: 7,
+      flagsCount: 0,
       matrix: [[{}]]
     }
   ]
@@ -46,9 +47,10 @@ export const mainStore = defineStore('test-store', () => {
 
   const startTime = ref()
   const endTime = ref()
-  const gameTime = ref()
+  const gameTime = ref(0)
+  const timerID = ref()
 
-  const userName = ref('')
+  const userName = ref('Безымянный')
 
   let recordList = ref<IRecord[]>()
 
@@ -58,6 +60,7 @@ export const mainStore = defineStore('test-store', () => {
     if (level.firstClick) {
       setMatrix(level, clickTarget)
       startTime.value = new Date()
+      setTimer(level)
       openEmptyCells(level, clickTarget[0], clickTarget[1])
     } else {
       openEmptyCells(level, clickTarget[0], clickTarget[1])
@@ -90,7 +93,10 @@ export const mainStore = defineStore('test-store', () => {
     return matrix
   }
 
-  levelList.forEach(item => item.matrix = setEmptyMatrix(item))
+  levelList.forEach(item => {
+    item.matrix = setEmptyMatrix(item)
+    item.flagsCount = item.bombCount
+  })
 
   function disableButton(level: Level, coords: number[]) {
     let [i, j] = coords
@@ -142,27 +148,17 @@ export const mainStore = defineStore('test-store', () => {
 
   function toggleWin(level: Level) {
     isWin.value = !isWin.value
-    endTime.value = new Date()
-    gameTime.value = Math.abs(startTime.value.getTime() - endTime.value.getTime())
+    clearTimeout(timerID.value)
     setRecordList(recordList.value, {userName: userName.value, time: gameTime.value, level: level.name})
-    
   }
 
-  function setRecordList(recordList: any, record: {}) {
-    if (recordList) {
-      recordList.push(record)
+  function setTimer(level: Level) {
+    if (!level.bombCount) {
+      gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
     } else {
-      recordList = [record]
-      console.log(recordList)
-    }
-    
-    if (localStorage.recordList) {
-      let localeList = JSON.parse(localStorage.recordList)
-      localeList.push(record)
-      console.log(localeList)
-      localStorage.setItem('recordList', JSON.stringify(localeList))
-    } else {
-      localStorage.setItem('recordList', JSON.stringify([record]))
+      gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
+      console.log(gameTime.value)
+      timerID.value = setTimeout(() => {setTimer(level)}, 1000)
     }
   }
 

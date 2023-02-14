@@ -18,8 +18,13 @@
       </div>
       <div class="statistic__item">
         <span class="clock__icon"></span>
-        <p>
-          Время: {{ store.gameTime || '00:00' }}
+        <p v-if="store.gameTime">
+          Время:
+          {{ convertStampToTime(store.gameTime) }}
+        </p>
+        <p v-else>
+          Время:
+          {{ '00:00' }}
         </p>
       </div>
     </div>
@@ -29,7 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { Level } from '~~/interface';
+import { convertStampToTime } from '~~/helpers/convertStampToTime';
+import { Level } from '~~/interface'
 import { mainStore } from '~~/store'
 const store = mainStore()
 
@@ -81,5 +87,9 @@ function disableButton(level: Level, coords: number[]) {
 .clock__icon {
   background: url('/icon/clock.svg') center center no-repeat;
   background-size: contain;
+}
+
+.statistic__item {
+  min-width: 90px;
 }
 </style>
