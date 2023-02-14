@@ -103,7 +103,7 @@ span {
     z-index: 10;
 
     &.disabled {
-        pointer-events: none;
+        cursor: auto;
         background: url('/icon/flag.svg') center center no-repeat, $color-gray-100;
         background-size: 50%;
     }

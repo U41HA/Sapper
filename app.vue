@@ -18,4 +18,9 @@ html {
   margin: 0;
 }
 
+body:has(> .modal__background) {
+  height: 100vh;
+  overflow: hidden;
+}
+
 </style>

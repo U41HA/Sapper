@@ -11,3 +11,5 @@ export function setBombValue(arr: any[][]) {
       }
     }
   }
+
+  // TODO Переделать циклы на forEach

@@ -9,9 +9,21 @@
         </common-the-cell>
       </template>
     </div>
-    <div class="mt-10 font-12-600">
-      Количество бомб: {{ props.level.bombCount }}
+    <div class="statistic mt-10 font-14-600 d-flex align-center justify-center">
+      <div class="statistic__item mr-5">
+        <span class="flag__icon"></span>
+        <p>
+          Кол-во флагов: {{ props.level.flagsCount }}
+        </p>
+      </div>
+      <div class="statistic__item">
+        <span class="clock__icon"></span>
+        <p>
+          Время: {{ store.gameTime || '00:00' }}
+        </p>
+      </div>
     </div>
+
   </div>
 
 </template>
@@ -37,12 +49,37 @@ function disableButton(level: Level, coords: number[]) {
 
 <style lang="scss" scoped>
 .field {
-  margin: 50px 0px;
+  margin: 50px auto;
   display: grid;
   justify-content: center;
+  width: fit-content;
 }
 
 .cell.disabled {
-  pointer-events: none;
+  cursor: auto;
+}
+
+.statistic__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.flag__icon,
+.clock__icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.flag__icon {
+  background: url('/icon/flag.svg') center center no-repeat;
+  background-size: contain;
+}
+
+.clock__icon {
+  background: url('/icon/clock.svg') center center no-repeat;
+  background-size: contain;
 }
 </style>

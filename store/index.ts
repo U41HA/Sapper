@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Level } from '~~/interface'
+import { IRecord, Level } from '~~/interface'
 import { generateMatrix } from '~~/helpers/generateMatrix'
 import { setMatrix } from '~~/helpers/setMatrix'
 import { ClientOnly } from '~~/.nuxt/components'
@@ -15,6 +15,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 8,
       bombCount: 7,
       firstClick: true,
+      flagsCount: 7,
       matrix: [[{}]]
     },
     {
@@ -24,6 +25,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 16,
       bombCount: 30,
       firstClick: true,
+      flagsCount: 30,
       matrix: [[{}]]
     },
     {
@@ -33,6 +35,7 @@ export const mainStore = defineStore('test-store', () => {
       column: 16,
       bombCount: 1,
       firstClick: true,
+      flagsCount: 7,
       matrix: [[{}]]
     }
   ]
@@ -44,6 +47,10 @@ export const mainStore = defineStore('test-store', () => {
   const startTime = ref()
   const endTime = ref()
   const gameTime = ref()
+
+  const userName = ref('')
+
+  let recordList = ref<IRecord[]>()
 
   // action
 
@@ -87,41 +94,88 @@ export const mainStore = defineStore('test-store', () => {
 
   function disableButton(level: Level, coords: number[]) {
     let [i, j] = coords
-    if (level.matrix[i][j].isBomb && !level.matrix[i][j].isDisabled && level.matrix[i][j].isVisible) {
-      level.matrix[i][j].isDisabled = !level.matrix[i][j].isDisabled
-      level.bombCount--
-      if (!level.bombCount) {
-        toggleWin()
-        toggleModal()
-      }
-    } else if (level.matrix[i][j].isBomb && level.matrix[i][j].isVisible) {
-      level.matrix[i][j].isDisabled = !level.matrix[i][j].isDisabled
-      level.bombCount++
-    } else {
+    function toggleCell() {
       level.matrix[i][j].isDisabled = !level.matrix[i][j].isDisabled
     }
+    const isBomb = level.matrix[i][j].isBomb
+    const isDisabled = level.matrix[i][j].isDisabled
+    const isVisible = level.matrix[i][j].isVisible
+
+    if (isBomb && !isDisabled && isVisible && level.flagsCount) {
+      toggleCell()
+      level.bombCount--
+      level.flagsCount--
+      if (!level.bombCount) {
+        toggleWin(level)
+        toggleModal()
+      }
+    } else if (isBomb && isVisible && isDisabled) {
+      toggleCell()
+      level.bombCount++
+      level.flagsCount++
+    } else if (level.flagsCount && isVisible && !isDisabled){
+      toggleCell()
+      level.flagsCount--
+    } else if(isDisabled) {
+      toggleCell()
+      level.flagsCount++
+    }
+    // if (!isDisabled && isVisible && level.flagsCount) {
+    //   level.flagsCount--
+    // } else if (isVisible && isDisabled){
+    //   level.flagsCount++
+    // }
   }
 
   function toggleModal() {
     isModalActive.value = !isModalActive.value
   }
 
-  function newGame() {
-    toggleModal()
-    toggleWin()
+  function newGame(level: Level) {
+    if (!level.bombCount) {
+      toggleModal()
+    }
     if(process.client) {
       window.location.reload()
     }
   }
 
-  function toggleWin() {
+  function toggleWin(level: Level) {
     isWin.value = !isWin.value
     endTime.value = new Date()
-    gameTime.value = new Date(Math.abs(startTime.value.getTime() - endTime.value.getTime())).toLocaleTimeString([], {
-      minute: '2-digit',
-      second: '2-digit',
-    })
-    console.log(gameTime.value)
+    gameTime.value = Math.abs(startTime.value.getTime() - endTime.value.getTime())
+    setRecordList(recordList.value, {userName: userName.value, time: gameTime.value, level: level.name})
+    
+  }
+
+  function setRecordList(recordList: any, record: {}) {
+    if (recordList) {
+      recordList.push(record)
+    } else {
+      recordList = [record]
+      console.log(recordList)
+    }
+    
+    if (localStorage.recordList) {
+      let localeList = JSON.parse(localStorage.recordList)
+      localeList.push(record)
+      console.log(localeList)
+      localStorage.setItem('recordList', JSON.stringify(localeList))
+    } else {
+      localStorage.setItem('recordList', JSON.stringify([record]))
+    }
+  }
+
+  function updateRecordList() {
+    if(localStorage.recordList) {
+      // console.log(localStorage.recordList)
+      recordList.value = JSON.parse(localStorage.recordList)
+      // console.log(recordList)
+    }
+  }
+
+  function updateUserName(name: string) {
+    userName.value = name
   }
 
   return {
@@ -129,9 +183,13 @@ export const mainStore = defineStore('test-store', () => {
     isModalActive,
     isWin,
     gameTime,
+    userName,
+    recordList,
     openCell,
     disableButton,
     toggleModal,
-    newGame
+    newGame,
+    updateUserName,
+    updateRecordList
   }
 })
