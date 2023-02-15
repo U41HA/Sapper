@@ -5,7 +5,8 @@ export interface Level {
     column: number,
     bombCount: number,
     firstClick: boolean,
-    flagsCount: number
+    flagsCount: number,
+    emptyCell: number,
     matrix: any[][]
 }
 

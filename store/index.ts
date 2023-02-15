@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { IRecord, Level } from '~~/interface'
 import { generateMatrix } from '~~/helpers/generateMatrix'
 import { setMatrix } from '~~/helpers/setMatrix'
-import { ClientOnly } from '~~/.nuxt/components'
 import { setRecordList } from '~~/helpers/setRecordList'
 
 export const mainStore = defineStore('test-store', () => {
@@ -17,6 +16,7 @@ export const mainStore = defineStore('test-store', () => {
       bombCount: 7,
       firstClick: true,
       flagsCount: 0,
+      emptyCell: 0,
       matrix: [[{}]]
     },
     {
@@ -27,6 +27,7 @@ export const mainStore = defineStore('test-store', () => {
       bombCount: 30,
       firstClick: true,
       flagsCount: 0,
+      emptyCell: 0,
       matrix: [[{}]]
     },
     {
@@ -37,6 +38,7 @@ export const mainStore = defineStore('test-store', () => {
       bombCount: 1,
       firstClick: true,
       flagsCount: 0,
+      emptyCell: 0,
       matrix: [[{}]]
     }
   ]
@@ -56,7 +58,7 @@ export const mainStore = defineStore('test-store', () => {
 
   // action
 
-  function openCell(level: Level, clickTarget: number[]): any[][] | void {
+  function openCell(level: Level, clickTarget: number[]) {
     if (level.firstClick) {
       setMatrix(level, clickTarget)
       startTime.value = new Date()
@@ -72,17 +74,29 @@ export const mainStore = defineStore('test-store', () => {
       for (let k = i - 1; k <= i + 1; k++) {
         for (let f = j - 1; f <= j + 1; f++) {
           if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
+            if (level.matrix[k][f].isVisible) {
+              level.emptyCell--
+            }
             level.matrix[k][f].isVisible = false
+            if (!level.emptyCell) {
+              toggleWin(level)
+              toggleModal()
+            }
             setTimeout(() => { openEmptyCells(level, k, f) }, 30)
           }
         }
       }
     } else if (!level.matrix[i][j].isDisabled) {
+      if (level.matrix[i][j].isVisible) {
+        level.emptyCell--
+      }
       level.matrix[i][j].isVisible = false
       if (level.matrix[i][j].isBomb) {
-        console.log('Boom!')
         toggleModal()
-        console.log(isModalActive.value)
+      }
+      if (!level.emptyCell) {
+        toggleWin(level)
+        toggleModal()
       }
     }
   }
@@ -96,6 +110,7 @@ export const mainStore = defineStore('test-store', () => {
   levelList.forEach(item => {
     item.matrix = setEmptyMatrix(item)
     item.flagsCount = item.bombCount
+    item.emptyCell = item.column * item.line - item.bombCount
   })
 
   function disableButton(level: Level, coords: number[]) {
@@ -126,11 +141,6 @@ export const mainStore = defineStore('test-store', () => {
       toggleCell()
       level.flagsCount++
     }
-    // if (!isDisabled && isVisible && level.flagsCount) {
-    //   level.flagsCount--
-    // } else if (isVisible && isDisabled){
-    //   level.flagsCount++
-    // }
   }
 
   function toggleModal() {
@@ -157,21 +167,25 @@ export const mainStore = defineStore('test-store', () => {
       gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
     } else {
       gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
-      console.log(gameTime.value)
       timerID.value = setTimeout(() => {setTimer(level)}, 1000)
     }
   }
 
   function updateRecordList() {
     if(localStorage.recordList) {
-      // console.log(localStorage.recordList)
       recordList.value = JSON.parse(localStorage.recordList)
-      // console.log(recordList)
     }
   }
 
   function updateUserName(name: string) {
     userName.value = name
+  }
+
+  function decreaseOpenedCell(level: Level) {
+    level.emptyCell--
+    if (!level.emptyCell) {
+      toggleWin(level)
+    }
   }
 
   return {
@@ -186,6 +200,7 @@ export const mainStore = defineStore('test-store', () => {
     toggleModal,
     newGame,
     updateUserName,
-    updateRecordList
+    updateRecordList,
+    decreaseOpenedCell
   }
 })

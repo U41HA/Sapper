@@ -5,7 +5,7 @@
       @click="store.openCell(level, clickTarget)" @click.right.prevent="disableButton(props.level, clickTarget)">
       <template v-for="column, indexX in props.level.matrix">
         <common-the-cell v-for="cell, indexY in column" :row-index="indexX" :column-index="indexY" :key="indexY"
-          :data="cell" v-model:clickTarget="clickTarget" class="cell" :class="{ 'disabled': cell.isDisabled }">
+          :data="cell" v-model:clickTarget="clickTarget" :level="props.level" class="cell" :class="{ 'disabled': cell.isDisabled }">
         </common-the-cell>
       </template>
     </div>

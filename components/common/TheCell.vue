@@ -15,20 +15,29 @@
 </template>
 
 <script setup lang="ts">
-import { ICell } from '~~/interface';
+import { ICell, Level } from '~~/interface'
+import { mainStore } from '~~/store'
+
+
+
 interface Props {
     rowIndex: number,
     columnIndex: number,
     data: ICell | undefined,
-    clickTarget: number[] | undefined | null
+    clickTarget: number[] | undefined | null,
+    level: Level
 }
 const props = defineProps<Props>()
-
+const store = mainStore()
 const emit = defineEmits(['update:clickTarget'])
 
 function changeCoords(x: number, y: number) {
     emit('update:clickTarget', [x, y])
 }
+
+// watch(props.level.matrix[props.rowIndex][props.columnIndex].isVisible, ()=> {
+//     store.decreaseOpenedCell(props.level)
+// })
 
 </script>
 
