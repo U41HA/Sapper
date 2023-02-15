@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { IRecord, Level } from '~~/interface'
+import { IOptions, IRecord, Level } from '~~/interface'
 import { generateMatrix } from '~~/helpers/generateMatrix'
 import { setMatrix } from '~~/helpers/setMatrix'
 import { setRecordList } from '~~/helpers/setRecordList'
@@ -17,7 +17,12 @@ export const mainStore = defineStore('test-store', () => {
       firstClick: true,
       flagsCount: 0,
       emptyCell: 0,
-      matrix: [[{}]]
+      matrix: [[{}]],
+      memory: {
+        bombCount: 0,
+        flagsCount: 0,
+        emptyCell: 0
+      }
     },
     {
       id: 2,
@@ -28,19 +33,46 @@ export const mainStore = defineStore('test-store', () => {
       firstClick: true,
       flagsCount: 0,
       emptyCell: 0,
-      matrix: [[{}]]
+      matrix: [[{}]],
+      memory: {
+        bombCount: 0,
+        flagsCount: 0,
+        emptyCell: 0
+      }
     },
     {
       id: 3,
       name: 'Сложный',
       line: 32,
       column: 16,
-      bombCount: 1,
+      bombCount: 3,
       firstClick: true,
       flagsCount: 0,
       emptyCell: 0,
-      matrix: [[{}]]
-    }
+      matrix: [[{}]],
+      memory: {
+        bombCount: 0,
+        flagsCount: 0,
+        emptyCell: 0
+      }
+    },
+    {
+      id: 4,
+      name: 'Custom',
+      line: 0,
+      column: 0,
+      bombCount: 0,
+      firstClick: true,
+      flagsCount: 0,
+      emptyCell: 0,
+      matrix: [[{}]],
+      memory: {
+        bombCount: 0,
+        flagsCount: 0,
+        emptyCell: 0
+      }
+    },
+
   ]
 
   const isModalActive = ref(false)
@@ -54,7 +86,7 @@ export const mainStore = defineStore('test-store', () => {
 
   const userName = ref('Безымянный')
 
-  let recordList = ref<IRecord[]>()
+  const recordList = ref<IRecord[]>([])
 
   // action
 
@@ -70,7 +102,7 @@ export const mainStore = defineStore('test-store', () => {
   }
 
   function openEmptyCells(level: Level, i: number, j: number) {
-    if (!level.matrix[i][j].isBomb && !level.matrix[i][j].bombAround && !level.matrix[i][j].isDisabled) {
+    if (!level.matrix[i][j].isBomb && !level.matrix[i][j].bombAround && !level.matrix[i][j].isDisabled && !level.matrix[i][j].isDoubt) {
       for (let k = i - 1; k <= i + 1; k++) {
         for (let f = j - 1; f <= j + 1; f++) {
           if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
@@ -79,26 +111,24 @@ export const mainStore = defineStore('test-store', () => {
             }
             level.matrix[k][f].isVisible = false
             if (!level.emptyCell) {
-              toggleWin(level)
-              toggleModal()
+              toggleWin(level, true)
             }
             setTimeout(() => { openEmptyCells(level, k, f) }, 30)
           }
         }
       }
-    } else if (!level.matrix[i][j].isDisabled) {
+    } else if (!level.matrix[i][j].isDisabled && !level.matrix[i][j].isDoubt) {
       if (level.matrix[i][j].isVisible) {
         level.emptyCell--
       }
       level.matrix[i][j].isVisible = false
       if (level.matrix[i][j].isBomb) {
-        toggleModal()
+        toggleWin(level, false)
       }
       if (!level.emptyCell) {
-        toggleWin(level)
-        toggleModal()
+        toggleWin(level, true)
       }
-    }
+    } else return
   }
 
   function setEmptyMatrix(level: Level) {
@@ -111,55 +141,68 @@ export const mainStore = defineStore('test-store', () => {
     item.matrix = setEmptyMatrix(item)
     item.flagsCount = item.bombCount
     item.emptyCell = item.column * item.line - item.bombCount
+    item.memory.bombCount = item.bombCount
+    item.memory.emptyCell = item.emptyCell
+    item.memory.flagsCount = item.flagsCount
   })
 
   function disableButton(level: Level, coords: number[]) {
     let [i, j] = coords
-    function toggleCell() {
-      level.matrix[i][j].isDisabled = !level.matrix[i][j].isDisabled
-    }
+
     const isBomb = level.matrix[i][j].isBomb
     const isDisabled = level.matrix[i][j].isDisabled
     const isVisible = level.matrix[i][j].isVisible
+    const isDoubt = level.matrix[i][j].isDoubt
 
-    if (isBomb && !isDisabled && isVisible && level.flagsCount) {
+    function toggleCell() {
+      if (isDisabled) {
+        level.matrix[i][j].isDisabled = !isDisabled
+        level.matrix[i][j].isDoubt = !isDoubt
+      } else if (isDoubt) {
+        level.matrix[i][j].isDoubt = !isDoubt
+      } else {
+        level.matrix[i][j].isDisabled = !isDisabled
+      }
+    }
+
+
+    if (isBomb && !isDisabled && isVisible && level.flagsCount && !isDoubt) {
       toggleCell()
       level.bombCount--
       level.flagsCount--
       if (!level.bombCount) {
-        toggleWin(level)
-        toggleModal()
+        toggleWin(level, true)
       }
     } else if (isBomb && isVisible && isDisabled) {
       toggleCell()
       level.bombCount++
       level.flagsCount++
-    } else if (level.flagsCount && isVisible && !isDisabled){
+    } else if (level.flagsCount && isVisible && !isDisabled && !isDoubt) {
       toggleCell()
       level.flagsCount--
-    } else if(isDisabled) {
+    } else if (isDisabled) {
       toggleCell()
       level.flagsCount++
+    } else if (isDoubt) {
+      toggleCell()
     }
-  }
-
-  function toggleModal() {
-    isModalActive.value = !isModalActive.value
   }
 
   function newGame(level: Level) {
-    if (!level.bombCount) {
-      toggleModal()
-    }
-    if(process.client) {
-      window.location.reload()
+    if (process.client) {
+      isModalActive.value = false
+      resetLevel(level)
     }
   }
 
-  function toggleWin(level: Level) {
-    isWin.value = !isWin.value
+  function toggleWin(level: Level, winValue: boolean) {
+    isWin.value = winValue
+    isModalActive.value = true
     clearTimeout(timerID.value)
-    setRecordList(recordList.value, {userName: userName.value, time: gameTime.value, level: level.name})
+    console.log(winValue)
+    if (winValue) {
+      setRecordList(recordList, { userName: userName.value, time: gameTime.value, level: level.name, column: level.column, line: level.line, bombCount: level.memory.bombCount })
+    }
   }
 
   function setTimer(level: Level) {
@@ -167,12 +210,12 @@ export const mainStore = defineStore('test-store', () => {
       gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
     } else {
       gameTime.value = Math.abs(startTime.value.getTime() - new Date().getTime())
-      timerID.value = setTimeout(() => {setTimer(level)}, 1000)
+      timerID.value = setTimeout(() => { setTimer(level) }, 1000)
     }
   }
 
   function updateRecordList() {
-    if(localStorage.recordList) {
+    if (localStorage.recordList) {
       recordList.value = JSON.parse(localStorage.recordList)
     }
   }
@@ -184,7 +227,66 @@ export const mainStore = defineStore('test-store', () => {
   function decreaseOpenedCell(level: Level) {
     level.emptyCell--
     if (!level.emptyCell) {
-      toggleWin(level)
+      toggleWin(level, true)
+    }
+  }
+
+  function resetLevel(level: Level) {
+    level.matrix = setEmptyMatrix(level)
+    level.firstClick = true
+    level.bombCount = level.memory.bombCount
+    level.emptyCell = level.memory.emptyCell
+    level.flagsCount = level.memory.flagsCount
+    level.matrix.forEach(item => item.forEach(item => item.isVisible = true))
+    level.matrix.forEach(item => item.forEach(item => item.isDisabled = false))
+    level.matrix.forEach(item => item.forEach(item => item.isDoubt = false))
+    clearTimeout(timerID.value)
+    startTime.value = 0
+    endTime.value = 0
+    gameTime.value = 0
+  }
+
+  function cleanRecordList() {
+    recordList.value = []
+  }
+
+  function startCustomGame(level: Level, options: IOptions) {
+    resetLevel(level)
+    console.log(options)
+    level.bombCount = options.bombCount
+    level.column = options.fieldColumn
+    level.line = options.fieldLine
+    level.matrix = setEmptyMatrix(level)
+    level.flagsCount = level.bombCount
+    level.emptyCell = level.column * level.line - level.bombCount
+    level.memory.bombCount = level.bombCount
+    level.memory.emptyCell = level.emptyCell
+    level.memory.flagsCount = level.flagsCount
+    console.log(level)
+  }
+
+  function openByMiddle(level: Level, coords: number[]) {
+    let [i, j] = coords
+    if (level.firstClick) {
+      setMatrix(level, coords)
+      startTime.value = new Date()
+      setTimer(level)
+    }
+    for (let k = i - 1; k <= i + 1; k++) {
+      for (let f = j - 1; f <= j + 1; f++) {
+        if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
+          if (level.matrix[k][f].isVisible) {
+            level.emptyCell--
+          }
+          level.matrix[k][f].isVisible = false
+          if (!level.emptyCell) {
+            toggleWin(level, true)
+          }
+          if (level.matrix[k][f].isBomb) {
+            toggleWin(level, false)
+          }
+        }
+      }
     }
   }
 
@@ -197,10 +299,12 @@ export const mainStore = defineStore('test-store', () => {
     recordList,
     openCell,
     disableButton,
-    toggleModal,
     newGame,
     updateUserName,
     updateRecordList,
-    decreaseOpenedCell
+    decreaseOpenedCell,
+    cleanRecordList,
+    startCustomGame,
+    openByMiddle
   }
 })

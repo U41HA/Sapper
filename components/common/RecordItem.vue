@@ -1,8 +1,8 @@
 <template>
     <div class="record__wrapper">
         <p class="font-20-600 username">{{ props.data.userName }}</p>
-        <p class="font-16-600 level">Уровень: {{ props.data.level }}</p>
-        <p class="font-20-600 time">{{time}}</p>
+        <p class="font-16-600 level">Уровень: {{ props.data.level }} {{ props.data.line }} x {{ props.data.column }} (Bomb: {{ props.data.bombCount }})</p>
+        <p class="font-20-600 time">{{convertStampToTime(props.data.time)}}</p>
     </div>
 </template>
 
@@ -14,12 +14,13 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const time = convertStampToTime(props.data.time)
+
 </script>
 
 <style lang="scss" scoped>
 .record__wrapper {
     width: 100%;
+    min-width: max-content;
     display: grid;
     grid-template-columns: 30% 50% 20%;
     align-items: center;

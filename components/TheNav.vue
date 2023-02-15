@@ -33,7 +33,7 @@ function changeLevel(level: Level) {
     gap: 20px;
     align-items: center;
 
-    @media (max-width: 361px) {
+    @media (max-width: 480px) {
         flex-direction: column;
         min-width: 100%;
         // align-items: center;
@@ -42,7 +42,7 @@ function changeLevel(level: Level) {
 
 .navigation__item,
 .button {
-    @media (max-width: 361px) {
+    @media (max-width: 480px) {
         min-width: 100%;
     }
 }

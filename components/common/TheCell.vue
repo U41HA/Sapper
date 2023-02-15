@@ -3,12 +3,13 @@
         class="wrapper font-12-800" 
         @click="changeCoords(props.rowIndex, props.columnIndex)"
         @click.right.prevent="changeCoords(props.rowIndex, props.columnIndex)"
+        @keyup.2="changeCoords(props.rowIndex, props.columnIndex)"
         :class="[{bomb: props.data?.isBomb}, `bomb-${props.data?.bombAround}`]">
         <span v-if="props.data?.bombAround !== 0">
             {{ props.data?.bombAround }}
         </span>
         <transition name="fade">
-            <v-btn v-if="props.data?.isVisible" :class="{ 'disabled': props.data?.isDisabled }"
+            <v-btn v-if="props.data?.isVisible || props.data?.isDoubt" :class="{ 'disabled': props.data?.isDisabled, 'doubt':props.data?.isDoubt }"
                 class="test__button"></v-btn>
         </transition>
     </div>
@@ -115,6 +116,11 @@ span {
         cursor: auto;
         background: url('/icon/flag.svg') center center no-repeat, $color-gray-100;
         background-size: 50%;
+    }
+
+    &.doubt {
+        background: url('/icon/doubt.svg') center center no-repeat, $color-gray-100;
+        background-size: 40%;
     }
 }
 </style>

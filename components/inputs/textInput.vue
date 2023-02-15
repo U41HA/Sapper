@@ -1,19 +1,35 @@
 <template>
     <div class="input">
-        <input id="#" v-model="data" type="text" name="#"
-            pattern="^[a-zA-Z]+$|^[А-Яа-яЁё\s]+$" :placeholder="placeholder" class="font-16-500" :disabled="disabled">
-        <p class="font-9-500 error">
-            Ошибка
-        </p>
+        <div v-if="type === 'text'">
+            <input id="#" v-model="data" :type="type" name="#" pattern="^[a-zA-Z]+$|^[А-Яа-яЁё\s]+$"
+                :placeholder="placeholder" class="font-16-500" :disabled="disabled">
+            <p class="font-9-500 error">
+                Ошибка. Допустимы только буквы
+            </p>
+        </div>
+        <div v-else>
+            <input id="#" v-model="data" :type="type" name="#" :placeholder="placeholder" class="font-16-500"
+                :disabled="disabled" :required="required" :max="max">
+            <p v-if="max !== 'NaN'" class="font-9-500 error">
+                Ошибка. Максимальное значение: {{ max }}
+            </p>
+            <p v-else class="font-9-500 error">
+                Ошибка. Максимальное значение: 0
+            </p>
+        </div>
+
     </div>
 </template>
 
 <script lang="ts" setup>
 import { useVModel } from '@vueuse/core'
 interface Props {
-    modelValue: string,
+    modelValue: string | number | null | undefined,
     placeholder: string,
-    disabled: boolean
+    disabled: boolean,
+    type: string,
+    required?: boolean,
+    max?: string
 }
 
 

@@ -1,3 +1,8 @@
+export interface IMemory {
+    bombCount: number,
+    flagsCount: number,
+    emptyCell: number
+}
 export interface Level {
     id: number,
     name: string,
@@ -7,18 +12,29 @@ export interface Level {
     firstClick: boolean,
     flagsCount: number,
     emptyCell: number,
-    matrix: any[][]
+    matrix: any[][],
+    memory: IMemory
 }
 
 export interface ICell {
     isBomb: boolean,
     bombAround: number,
     isVisible: boolean,
-    isDisabled: boolean
+    isDisabled: boolean,
+    isDoubt: boolean
 }
 
 export interface IRecord {
     userName: string
-    time: string,
-    level: string
+    time: number,
+    level: string,
+    column: number,
+    line: number,
+    bombCount: number
+}
+
+export interface IOptions {
+    fieldColumn: number
+    fieldLine: number
+    bombCount: number
 }
