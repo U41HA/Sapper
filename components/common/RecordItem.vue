@@ -1,7 +1,8 @@
 <template>
     <div class="record__wrapper">
         <p class="font-20-600 username">{{ props.data.userName }}</p>
-        <p class="font-16-600 level">Уровень: {{ props.data.level }} {{ props.data.line }} x {{ props.data.column }} (Bomb: {{ props.data.bombCount }})</p>
+        <p v-if="props.data.level === 'Custom'" class="font-16-600 level">Уровень: {{ props.data.level }} {{ props.data.line }} x {{ props.data.column }} (Bomb: {{ props.data.bombCount }})</p>
+        <p v-else class="font-16-600 level">Уровень: {{ props.data.level }}</p>
         <p class="font-20-600 time">{{convertStampToTime(props.data.time)}}</p>
     </div>
 </template>
@@ -22,7 +23,7 @@ const props = defineProps<Props>()
     width: 100%;
     min-width: max-content;
     display: grid;
-    grid-template-columns: 30% 50% 20%;
+    grid-template-columns: 35% 45% 20%;
     align-items: center;
     flex-wrap: wrap;
     box-shadow: 2px 2px 2px rgb(0 0 0 / 25%);
@@ -44,6 +45,6 @@ const props = defineProps<Props>()
 }
 
 .level {
-    justify-self: center;
+    justify-self: start;
 }
 </style>

@@ -3,7 +3,7 @@
         class="wrapper font-12-800" 
         @click="changeCoords(props.rowIndex, props.columnIndex)"
         @click.right.prevent="changeCoords(props.rowIndex, props.columnIndex)"
-        @keyup.2="changeCoords(props.rowIndex, props.columnIndex)"
+        @mousedown.middle="changeCoords(props.rowIndex, props.columnIndex)"
         :class="[{bomb: props.data?.isBomb}, `bomb-${props.data?.bombAround}`]">
         <span v-if="props.data?.bombAround !== 0">
             {{ props.data?.bombAround }}

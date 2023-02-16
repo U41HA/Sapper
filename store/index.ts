@@ -5,6 +5,7 @@ import { setMatrix } from '~~/helpers/setMatrix'
 import { setRecordList } from '~~/helpers/setRecordList'
 
 export const mainStore = defineStore('test-store', () => {
+  const config = useRuntimeConfig();
   // state
 
   const levelList = [
@@ -45,7 +46,7 @@ export const mainStore = defineStore('test-store', () => {
       name: 'Сложный',
       line: 32,
       column: 16,
-      bombCount: 3,
+      bombCount: 120,
       firstClick: true,
       flagsCount: 0,
       emptyCell: 0,
@@ -88,6 +89,8 @@ export const mainStore = defineStore('test-store', () => {
 
   const recordList = ref<IRecord[]>([])
 
+  const middleDownTimer = ref()
+
   // action
 
   function openCell(level: Level, clickTarget: number[]) {
@@ -113,7 +116,7 @@ export const mainStore = defineStore('test-store', () => {
             if (!level.emptyCell) {
               toggleWin(level, true)
             }
-            setTimeout(() => { openEmptyCells(level, k, f) }, 30)
+            setTimeout(() => { openEmptyCells(level, k, f) }, 25)
           }
         }
       }
@@ -195,13 +198,15 @@ export const mainStore = defineStore('test-store', () => {
     }
   }
 
-  function toggleWin(level: Level, winValue: boolean) {
+  async function toggleWin(level: Level, winValue: boolean) {
+    if (isModalActive.value) {return}
     isWin.value = winValue
     isModalActive.value = true
     clearTimeout(timerID.value)
-    console.log(winValue)
     if (winValue) {
-      setRecordList(recordList, { userName: userName.value, time: gameTime.value, level: level.name, column: level.column, line: level.line, bombCount: level.memory.bombCount })
+      await setRecordList(recordList, { userName: userName.value, time: gameTime.value, level: level.name, column: level.column, line: level.line, bombCount: level.memory.bombCount }, config.public.MOCK_URL)
+      // await updateRecordList()
+      // console.log(recordList.value)
     }
   }
 
@@ -214,10 +219,10 @@ export const mainStore = defineStore('test-store', () => {
     }
   }
 
-  function updateRecordList() {
-    if (localStorage.recordList) {
-      recordList.value = JSON.parse(localStorage.recordList)
-    }
+  async function updateRecordList() {
+    const res =  await fetch(`${config.MOCK_URL}/records`)
+    const fetchedRecordList = await res.json()
+    recordList.value = fetchedRecordList
   }
 
   function updateUserName(name: string) {
@@ -252,7 +257,6 @@ export const mainStore = defineStore('test-store', () => {
 
   function startCustomGame(level: Level, options: IOptions) {
     resetLevel(level)
-    console.log(options)
     level.bombCount = options.bombCount
     level.column = options.fieldColumn
     level.line = options.fieldLine
@@ -262,32 +266,42 @@ export const mainStore = defineStore('test-store', () => {
     level.memory.bombCount = level.bombCount
     level.memory.emptyCell = level.emptyCell
     level.memory.flagsCount = level.flagsCount
-    console.log(level)
   }
 
   function openByMiddle(level: Level, coords: number[]) {
-    let [i, j] = coords
-    if (level.firstClick) {
-      setMatrix(level, coords)
-      startTime.value = new Date()
-      setTimer(level)
-    }
-    for (let k = i - 1; k <= i + 1; k++) {
-      for (let f = j - 1; f <= j + 1; f++) {
-        if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
-          if (level.matrix[k][f].isVisible) {
-            level.emptyCell--
-          }
-          level.matrix[k][f].isVisible = false
-          if (!level.emptyCell) {
-            toggleWin(level, true)
-          }
-          if (level.matrix[k][f].isBomb) {
-            toggleWin(level, false)
+    if (Math.abs(middleDownTimer.value.getTime() - new Date().getTime()) > 1000) {
+      console.log('Прошло времени в мс: ', Math.abs(middleDownTimer.value.getTime() - new Date().getTime()))
+      return
+    } else {
+      console.log('Прошло меньше 1 секунды')
+      let [i, j] = coords
+      if (level.firstClick) {
+        setMatrix(level, coords)
+        startTime.value = new Date()
+        setTimer(level)
+      }
+      for (let k = i - 1; k <= i + 1; k++) {
+        for (let f = j - 1; f <= j + 1; f++) {
+          if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
+            if (level.matrix[k][f].isVisible) {
+              level.emptyCell--
+            }
+            level.matrix[k][f].isVisible = false
+            if (!level.emptyCell) {
+              toggleWin(level, true)
+            }
+            if (level.matrix[k][f].isBomb) {
+              toggleWin(level, false)
+            }
           }
         }
       }
-    }
+    } 
+  }
+
+  function regMiddleClick() {
+    middleDownTimer.value = new Date()
+    console.log('Отсчет времени клика пошел')
   }
 
   return {
@@ -305,6 +319,7 @@ export const mainStore = defineStore('test-store', () => {
     decreaseOpenedCell,
     cleanRecordList,
     startCustomGame,
-    openByMiddle
+    openByMiddle,
+    regMiddleClick
   }
 })

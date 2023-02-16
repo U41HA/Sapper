@@ -21,5 +21,10 @@ export default defineNuxtConfig({
     define: {
       'process.env.DEBUG': false,
     },
+  },
+  runtimeConfig: {
+    public: {
+      MOCK_URL: process.env.MOCK_URL
+    }
   }
 })

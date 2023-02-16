@@ -4,7 +4,8 @@
       :style="`grid-template-columns: repeat(${props.level.line}, 30px); grid-template-rows: repeat(${props.level.column}, 30px);`"
       @click="store.openCell(props.level, clickTarget)" 
       @click.right.prevent="disableButton(props.level, clickTarget)"
-      @keyup.2="store.openByMiddle(props.level, clickTarget)"
+      @mousedown.middle="store.regMiddleClick()"
+      @mouseup.middle="store.openByMiddle(props.level, clickTarget)"
       >
       <template v-for="column, indexX in props.level.matrix">
         <common-the-cell v-for="cell, indexY in column" :row-index="indexX" :column-index="indexY" :key="indexY"
@@ -12,7 +13,6 @@
         </common-the-cell>
       </template>
     </div>
-    <!-- TODO Разобраться с middle кнопкой мыши и ее ивентом. Функция работает, нужно дописать функцию просчета времени (как на выигрыше. Дата нажатия - дата отпуска кнопки. Если больше 1000 - делать функцию)  -->
     <form @submit.prevent="startCustomGame(props.level, {fieldColumn: fieldColumn, fieldLine: fieldLine, bombCount: bombCount})" class="custom__inputs" v-if="props.level.name === 'Custom'">
       <inputs-text-input :type="'number'" v-model="fieldColumn" :placeholder="'Число столбцов'" :disabled="!props.level.firstClick" :max="'32'"
       class="input text-input" :required="true"/>
