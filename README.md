@@ -39,4 +39,9 @@ Locally preview production build:
 npm run preview
 ```
 
+```.env
+MOCK_URL: https://63edd8895e9f1583bdb72eb4.mockapi.io/api/
+```
+
+
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
