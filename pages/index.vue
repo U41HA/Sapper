@@ -4,8 +4,8 @@
     <the-field v-show="level.name === currentLevel.name" v-for="level in store.levelList" :level="level"></the-field>
     <div class="d-flex flex-column interface">
       <v-btn class="mt-5 pa-4 d-flex font-14-600" @click="newGame(currentLevel)">Перезапустить игру</v-btn>
-      <inputs-text-input :type="'text'" v-model="inputValue" :placeholder="'Введите имя игрока'" :disabled="!currentLevel.firstClick"
-        class="input text-input"></inputs-text-input>
+      <inputs-text-input :type="'text'" v-model="inputValue" :placeholder="'Введите имя игрока'"
+        :disabled="!currentLevel.firstClick" class="input text-input"></inputs-text-input>
     </div>
     <transition name="fade">
       <div class="record__container" v-if="recordList?.length">

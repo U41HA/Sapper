@@ -12,7 +12,7 @@
 //     }
 //   }
 
-    
+
 export function setBombValue(arr: any[][]) {
   arr.forEach((item, yIndex) => item.forEach((item2, xIndex) => {
     for (let y = yIndex - 1; y <= yIndex + 1; y++) {
@@ -22,7 +22,5 @@ export function setBombValue(arr: any[][]) {
         }
       }
     }
-  })) 
+  }))
 }
-
-  // TODO Переделать циклы на forEach

@@ -46,7 +46,7 @@ export const mainStore = defineStore('test-store', () => {
       name: 'Сложный',
       line: 32,
       column: 16,
-      bombCount: 120,
+      bombCount: 3,
       firstClick: true,
       flagsCount: 0,
       emptyCell: 0,
@@ -173,9 +173,6 @@ export const mainStore = defineStore('test-store', () => {
       toggleCell()
       level.bombCount--
       level.flagsCount--
-      if (!level.bombCount) {
-        toggleWin(level, true)
-      }
     } else if (isBomb && isVisible && isDisabled) {
       toggleCell()
       level.bombCount++
@@ -204,7 +201,7 @@ export const mainStore = defineStore('test-store', () => {
     isModalActive.value = true
     clearTimeout(timerID.value)
     if (winValue) {
-      await setRecordList(recordList, { userName: userName.value, time: gameTime.value, level: level.name, column: level.column, line: level.line, bombCount: level.memory.bombCount }, config.public.MOCK_URL)
+      await setRecordList(recordList, { userName: userName.value, time: gameTime.value, level: level.name, column: level.column, line: level.line, bombCount: level.memory.bombCount }, config.public.mockUrl)
       // await updateRecordList()
       // console.log(recordList.value)
     }
@@ -220,7 +217,7 @@ export const mainStore = defineStore('test-store', () => {
   }
 
   async function updateRecordList() {
-    const res =  await fetch(`${config.MOCK_URL}/records`)
+    const res =  await fetch(`${config.public.mockUrl}/records`)
     const fetchedRecordList = await res.json()
     recordList.value = fetchedRecordList
   }
@@ -280,22 +277,25 @@ export const mainStore = defineStore('test-store', () => {
         startTime.value = new Date()
         setTimer(level)
       }
-      for (let k = i - 1; k <= i + 1; k++) {
-        for (let f = j - 1; f <= j + 1; f++) {
-          if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible) {
-            if (level.matrix[k][f].isVisible) {
-              level.emptyCell--
-            }
-            level.matrix[k][f].isVisible = false
-            if (!level.emptyCell) {
-              toggleWin(level, true)
-            }
-            if (level.matrix[k][f].isBomb) {
-              toggleWin(level, false)
+      if (!level.matrix[i][j].isVisible) {
+        for (let k = i - 1; k <= i + 1; k++) {
+          for (let f = j - 1; f <= j + 1; f++) {
+            if ((k >= 0 && f >= 0) && (k < level.matrix.length && f < level.matrix[0].length) && level.matrix[k][f].isVisible && !level.matrix[k][f].isDisabled) {
+              if (level.matrix[k][f].isVisible) {
+                level.emptyCell--
+              }
+              level.matrix[k][f].isVisible = false
+              if (!level.emptyCell) {
+                toggleWin(level, true)
+              }
+              if (level.matrix[k][f].isBomb) {
+                toggleWin(level, false)
+              }
             }
           }
         }
       }
+      
     } 
   }
 

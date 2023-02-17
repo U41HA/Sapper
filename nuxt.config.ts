@@ -24,7 +24,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      MOCK_URL: process.env.MOCK_URL
-    }
+      mockUrl: ''
+    },
+    
   }
 })

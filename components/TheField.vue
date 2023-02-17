@@ -60,9 +60,9 @@ const props = defineProps<Props>()
 
 const clickTarget = ref([])
 
-const fieldColumn = ref()
-const fieldLine = ref()
-const bombCount = ref()
+const fieldColumn = ref(0)
+const fieldLine = ref(0)
+const bombCount = ref(0)
 const maxBombCount = computed(() => Math.ceil(fieldColumn.value * fieldLine.value * 0.4)) 
 
 function disableButton(level: Level, coords: number[]) {

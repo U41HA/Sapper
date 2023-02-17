@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { Level } from '~~/interface';
+import { Level } from '~~/interface'
 import { mainStore } from '~~/store'
 
 interface Props {
@@ -31,9 +31,9 @@ const props = defineProps<Props>()
 const isModalActive = computed(() => store.isModalActive)
 const isWin = computed(() => store.isWin)
 const gameTime = computed(() => new Date(store.gameTime).toLocaleTimeString([], {
-      minute: '2-digit',
-      second: '2-digit',
-    }))
+    minute: '2-digit',
+    second: '2-digit',
+}))
 function newGame(level: Level) {
     store.newGame(level)
 }
